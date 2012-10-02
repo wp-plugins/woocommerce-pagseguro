@@ -46,7 +46,7 @@ You should have received a copy of the GNU General Public License along with Aut
 
 = 1.0.1 =
 * Fix to avoid enabling the gateway if the PagSeguro email account is empty
-* Correção para impedir que o portal de pagamento seja habilitado se a conta de email do PagSeguro estiver em branco
+* CorreÃ§Ã£o para impedir que o portal de pagamento seja habilitado se a conta de email do PagSeguro estiver em branco
 = 1.0 =
 * Initial plugin release.
 

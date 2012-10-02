@@ -89,8 +89,8 @@ function wcpagseguro_gateway_load() {
             // Actions
             add_action( 'woocommerce_receipt_pagseguro', array( &$this, 'receipt_page' ) );
             add_action( 'woocommerce_update_options_payment_gateways', array( &$this, 'process_admin_options' ) );
-			
-			$this->enabled = ( 'yes' == $this->settings['enabled'] ) && $this->is_valid_for_use() && ! empty( $this->email );
+
+			$this->enabled = ( 'yes' == $this->settings['enabled'] ) && $this->is_valid_for_use() && !empty( $this->email );
         }
 
 
@@ -104,7 +104,7 @@ function wcpagseguro_gateway_load() {
             if ( !in_array( get_woocommerce_currency() , array( 'BRL' ) ) ) return false;
             return true;
         }
-		
+
         /**
          * Admin Panel Options
          * - Options for bits like 'title' and availability on a country-by-country basis
@@ -125,8 +125,8 @@ function wcpagseguro_gateway_load() {
                 } else {
 					if ( empty( $this->email ) ) {
 ?>
-						<div class="inline error"><p><strong><?php _e( 'Gateway Disabled', 'wcpagseguro' ); ?></strong>: Você deve informar o email cadastrado no PagSeguro.</p></div>
-<?php					
+						<div class="inline error"><p><strong><?php _e( 'Gateway Disabled', 'wcpagseguro' ); ?></strong>: <?php _e( 'You should inform your email address in PagSeguro.', 'wcpagseguro' ); ?></p></div>
+<?php
 					}
 					// Generate the HTML For the settings form.
 					$this->generate_settings_html();
