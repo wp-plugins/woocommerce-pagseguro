@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: WooCommerce PagSeguro
- * Plugin URI: http://www.claudiosmweb.com/
+ * Plugin URI: http://claudiosmweb.com/plugins/pagseguro-para-woocommerce/
  * Description: Gateway de pagamento PagSeguro para WooCommerce.
  * Author: claudiosanches, Gabriel Reguly
  * Author URI: http://www.claudiosmweb.com/
