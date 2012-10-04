@@ -17,6 +17,10 @@ This plugin adds PagSeguro gateway to WooCommerce.
 
 Please notice that WooCommerce must be installed and active.
 
+### pt-BR
+
+Suporte em português: [claudiosmweb.com](http://claudiosmweb.com/plugins/pagseguro-para-woocommerce/)
+
 == Installation ==
 
 * Upload plugin files to your plugins folder, or install using WordPress' built-in Add New Plugin installer
