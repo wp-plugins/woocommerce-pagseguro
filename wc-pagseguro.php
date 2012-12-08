@@ -5,7 +5,7 @@
  * Description: Gateway de pagamento PagSeguro para WooCommerce.
  * Author: claudiosanches, Gabriel Reguly
  * Author URI: http://www.claudiosmweb.com/
- * Version: 1.3
+ * Version: 1.3.1
  * License: GPLv2 or later
  * Text Domain: wcpagseguro
  * Domain Path: /languages/
@@ -96,7 +96,6 @@ function wcpagseguro_gateway_load() {
             add_action( 'valid_pagseguro_ipn_request', array( &$this, 'successful_request' ) );
             add_action( 'woocommerce_receipt_pagseguro', array( &$this, 'receipt_page' ) );
             add_action( 'woocommerce_update_options_payment_gateways', array( &$this, 'process_admin_options' ) );
-            add_filter( 'woocommerce_available_payment_gateways', array( &$this, 'hides_when_is_outside_brazil' ) );
 
             if ( $this->valid_address == 'yes' ) {
                 add_action( 'woocommerce_checkout_process', array( &$this, 'valid_address' ) );
@@ -110,6 +109,9 @@ function wcpagseguro_gateway_load() {
 
             // Checks if token is not empty.
             $this->token == '' ? add_action( 'admin_notices', array( &$this, 'token_missing_message' ) ) : '';
+
+            // Filters.
+            add_filter( 'woocommerce_available_payment_gateways', array( &$this, 'hides_when_is_outside_brazil' ) );
 
             // Active logs.
             if ( $this->debug == 'yes' ) {
@@ -344,11 +346,11 @@ function wcpagseguro_gateway_load() {
 
                             $item_meta = new WC_Order_Item_Meta( $item['item_meta'] );
                             if ( $meta = $item_meta->display( true, true ) ) {
-                                $item_name .= ' (' . $meta . ')';
+                                $item_name .= ' - ' . $meta;
                             }
 
                             $args['itemId' . $item_loop]          = $item_loop;
-                            $args['itemDescription' . $item_loop] = substr( $item_name, 0, 100 );
+                            $args['itemDescription' . $item_loop] = substr( sanitize_text_field( $item_name ), 0, 95 );
                             $args['itemQuantity' . $item_loop]    = $item['qty'];
                             $args['itemAmount' . $item_loop]      = $order->get_item_total( $item, false );
 
@@ -595,9 +597,7 @@ function wcpagseguro_gateway_load() {
                                 );
                             }
 
-                            // Payment completed.
                             $order->add_order_note( __( 'Payment completed.', 'wcpagseguro' ) );
-                            $order->payment_complete();
 
                             break;
                         case 'aguardando-pagto':
@@ -605,7 +605,10 @@ function wcpagseguro_gateway_load() {
 
                             break;
                         case 'aprovado':
-                            $order->update_status( 'on-hold', __( 'Payment approved, awaiting compensation.', 'wcpagseguro' ) );
+                            $order->add_order_note( __( 'Payment approved, awaiting compensation.', 'wcpagseguro' ) );
+
+                            // Changing the order for processing and reduces the stock.
+                            $order->payment_complete();
 
                             break;
                         case 'em-analise':
