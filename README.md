@@ -1,26 +1,22 @@
-=== WooCommerce PagSeguro ===
-Contributors: claudiosanches, Gabriel Reguly
-Donate link: http://claudiosmweb.com/doacoes/
-Tags: woocommerce, pagseguro, payment
-Requires at least: 3.8
-Tested up to: 3.8
-Stable tag: 2.2.0
-License: GPLv2 or later
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
+# WooCommerce PagSeguro #
+**Contributors:** claudiosanches, Gabriel Reguly  
+**Donate link:** http://claudiosmweb.com/doacoes/  
+**Tags:** ecommerce, e-commerce, commerce, wordpress ecommerce, checkout, payment, payment gateway, pagseguro  
+**Requires at least:** 3.0  
+**Tested up to:** 3.5.1  
+**Stable tag:** 1.4  
+**License:** GPLv2 or later  
+**License URI:** http://www.gnu.org/licenses/gpl-2.0.html  
 
 Adds PagSeguro gateway to the WooCommerce plugin
 
-== Description ==
+## Description ##
 
 ### Add PagSeguro gateway to WooCommerce ###
 
 This plugin adds PagSeguro gateway to WooCommerce.
 
 Please notice that WooCommerce must be installed and active.
-
-= Contribute =
-
-You can contribute to the source code in our [GitHub](https://github.com/claudiosmweb/woocommerce-pagseguro) page.
 
 ### Descrição em Português: ###
 
@@ -30,17 +26,13 @@ Adicione o PagSeguro como método de pagamento em sua loja WooCommerce.
 
 O plugin WooCommerce PagSeguro foi desenvolvido sem nenhum incentivo do PagSeguro ou da UOL. Nenhum dos desenvolvedores deste plugin possuem vínculos com estas duas empresas.
 
-Este plugin desenvolvido a partir da [documentação oficial do PagSeguro](https://pagseguro.uol.com.br/v2/guia-de-integracao/visao-geral.html) e utiliza a última versão da API de pagamentos.
+Este plugin desenvolvido a partir da [documentação oficial do PagSeguro](https://pagseguro.uol.com.br/v2/guia-de-integracao/visao-geral.html).
 
-= Compatibilidade =
-
-Compatível com as versão 2.0.x e 2.1.x do WooCommerce.
-
-= Instalação: =
+### Instalação: ###
 
 Confira o nosso guia de instalação e configuração do PagSeguro na aba [Installation](http://wordpress.org/extend/plugins/woocommerce-pagseguro/installation/).
 
-= Dúvidas? =
+### Dúvidas? ###
 
 Você pode esclarecer suas dúvidas usando:
 
@@ -48,11 +40,7 @@ Você pode esclarecer suas dúvidas usando:
 * Criando um tópico no [fórum de ajuda do WordPress](http://wordpress.org/support/plugin/woocommerce-pagseguro) (apenas em inglês).
 * Ou entre em contato com os desenvolvedores do plugin em nossa [página](http://claudiosmweb.com/plugins/pagseguro-para-woocommerce/).
 
-= Coloborar =
-
-Você pode contribuir com código-fonte em nossa página no [GitHub](https://github.com/claudiosmweb/woocommerce-pagseguro).
-
-== Installation ==
+## Installation ##
 
 * Upload plugin files to your plugins folder, or install using WordPress built-in Add New Plugin installer;
 * Activate the plugin;
@@ -60,47 +48,46 @@ Você pode contribuir com código-fonte em nossa página no [GitHub](https://git
 
 ### Instalação e configuração em Português: ###
 
-= Instalação do plugin: =
+### Instalação do plugin: ###
 
 * Envie os arquivos do plugin para a pasta wp-content/plugins, ou instale usando o instalador de plugins do WordPress.
 * Ative o plugin.
 
-= Requerimentos: =
+### Requerimentos: ###
 
 É necessário possuir uma conta no [PagSeguro](http://pagseguro.uol.com.br/) e ter instalado o [WooCommerce](http://wordpress.org/extend/plugins/woocommerce/).
 
-= Configurações no PagSeguro: =
+### Configurações no PagSeguro: ###
 
-**Configuração Segura (recomendado):**
-
-No PagSeguro basta aceitar receber pagamentos apenas pela **API**.
-
-Você deve ativar esta opção em "Integrações" > "[Pagamentos via API](https://pagseguro.uol.com.br/integracao/pagamentos-via-api.jhtml)".
-
-Apenas com isso já é possível receber os pagamentos e fazer o retorno automático de dados.
-
-**Configuração menos segura (não recomendado):**
-
-Para esta opção você deve deixar a opção de **Pagamentos via API** desativada e configurar a página de redirecionamento.
-
-Desta forma você deve ir até "Integrações" > "[Página de redirecionamento](https://pagseguro.uol.com.br/integracao/pagina-de-redirecionamento.jhtml)":
+É necessário configurar a página de redirecionamento no PagSeguro.
+Você pode fazer isso em "Integrações" > "[Página de redirecionamento](https://pagseguro.uol.com.br/integracao/pagina-de-redirecionamento.jhtml)":
 
 Ative a opção de "Página fixa de redirecionamento" e configure ela como por exemplo:
 
-	http://seusite.com/finalizar-compra/pedido-recebido/
+    http://seusite.com/finalizar-compra/pedido-recebido/
 
 Habilite também o retorno automático de dados;
-Deve ser ativado em "Integrações" > "[Retorno automático de dados](https://pagseguro.uol.com.br/integracao/retorno-automatico-de-dados.jhtml)".
+Deve ser ativado em "Ingregra" > "[ Retorno automático de dados](https://pagseguro.uol.com.br/integracao/retorno-automatico-de-dados.jhtml)".
 
-= Configurações do Plugin: =
+Marque ativado e adicione a url como por exemplo:
+
+    http://seusite.com/?wc-api=WC_PagSeguro_Gateway
+
+No momento o plugin funciona apenas com a integração simples. Desta forma é necessário desativar os pagamentos via API.
+Você pode fazer isso em "Integrações" > "[Pagamentos via API](https://pagseguro.uol.com.br/integracao/pagamentos-via-api.jhtml)".
+
+Com estas configurações a sua conta no PagSeguro estará pronta para receber os pagamentos de sua loja.
+
+### Configurações do Plugin: ###
 
 Com o plugin instalado acesse o admin do WordPress e entre em "WooCommerce" > "Configurações" > "Portais de pagamento"  > "PagSeguro".
 
-Habilite o PagSeguro, adicione o seu e-mail e o token do PagSeguro. O token é utilizado para gerar os pagamentos e fazer o retorno de dados.
+Habilite o PagSeguro, adicione o seu e-mail e o token do PagSeguro.
 
+Utilizamos o token para validar o retorno automático de dados.
 Você pode conseguir um token no PagSeguro em "Integrações" > "[Token de Segurança](https://pagseguro.uol.com.br/integracao/token-de-seguranca.jhtml)".
 
-= Configurações no WooCommerce =
+### Configurações no WooCommerce ###
 
 No WooCommerce 2.0 ou superior existe uma opção para cancelar a compra e liberar o estoque depois de alguns minutos.
 
@@ -110,216 +97,159 @@ Para corrigir isso é necessário ir em "WooCommerce" > "Configurações" > "Inv
 
 Pronto, sua loja já pode receber pagamentos pelo PagSeguro.
 
-== Frequently Asked Questions ==
+## Frequently Asked Questions ##
 
-= What is the plugin license? =
+### What is the plugin license? ###
 
 * This plugin is released under a GPL license.
 
-= What is needed to use this plugin? =
+### What is needed to use this plugin? ###
 
-* WooCommerce version 2.0 or latter installed and active.
+* WooCommerce installed and active
 * Only one account on [PagSeguro](http://pagseguro.uol.com.br/ "PagSeguro").
 
 ### FAQ em Português: ###
 
-= Qual é a licença do plugin? =
+### Qual é a licença do plugin? ###
 
 Este plugin esta licenciado como GPL.
 
-= O que eu preciso para utilizar este plugin? =
+### O que eu preciso para utilizar este plugin? ###
 
-* Ter instalado o plugin WooCommerce 2.0 ou superior.
+* Ter instalado o plugin WooCommerce.
 * Possuir uma conta no PagSeguro.
 * Gerar um token de segurança no PagSeguro.
-* Utilizar uma das duas opções de configuração no PagSeguro (veja elas no guia de [instalação do plugin](http://wordpress.org/extend/plugins/woocommerce-pagseguro/installation/)).
+* Habilitar o Retorno automático de dados no PagSeguro.
 * Desativar os pagamentos via API.
 
-= Como funciona o PagSeguro? =
+### Como funciona o PagSeguro? ###
 
 * Saiba mais em [PagSeguro - Como funciona](https://pagseguro.uol.com.br/para_seu_negocio/como_funciona.jhtml).
 * Ou acesse a [FAQ do PagSeguro](https://pagseguro.uol.com.br/atendimento/perguntas_frequentes.jhtml).
 
-= PagSeguro recebe pagamentos de quais países? =
+### PagSeguro recebe pagamentos de quais países? ###
 
 No momento o PagSeguro recebe pagamentos apenas do Brasil.
 
 Configuramos o plugin para receber pagamentos apenas de usuários que selecionarem o Brasil nas informações de pagamento durante o checkout.
 
-= Quais são os meios de pagamento que o plugin aceita? =
+### Quais são os meios de pagamento que o plugin aceita? ###
 
 São aceitos todos os meios de pagamentos que o PagSeguro disponibiliza.
 Entretanto você precisa ativa-los na sua conta no PagSeguro.
 
 Confira os meios de pagamento em [PagSeguro - Meios de Pagamento e Parcelamento](https://pagseguro.uol.com.br/para_voce/meios_de_pagamento_e_parcelamento.jhtml#rmcl).
 
-= Quais são as taxas de transações que o PagSeguro cobra? =
+### Quais são as taxas de transações que o PagSeguro cobra? ###
 
 Para estas informações consulte: [PagSeguro - Taxas e Tarifas](https://pagseguro.uol.com.br/taxas_e_tarifas.jhtml).
 
-= Quais são os limites de recebimento do PagSeguro? =
+### Quais são os limites de recebimento do PagSeguro? ###
 
 Consulte: [PagSeguro - Tabela de Limites](https://pagseguro.uol.com.br/account/limits.jhtml).
 
-= Como que plugin faz integração com PagSeguro? =
+### Como que plugin faz integração com PagSeguro? ###
 
-Fazemos a integração baseada na documentação oficial do PagSeguro que pode ser encontrada em "[Guia de integração - PagSeguro](https://pagseguro.uol.com.br/v2/guia-de-integracao/visao-geral.html)" utilizando a última versão da API de pagamentos.
+Fazemos a integração baseada na documentação oficial do PagSeguro que pode ser encontrada em "[Guia de integração - PagSeguro](https://pagseguro.uol.com.br/v2/guia-de-integracao/visao-geral.html)".
 
-= Instalei o plugin, mas a opção de pagamento do PagSeguro some durante o checkout. O que fiz de errado? =
+### Instalei o plugin, mas a opção de pagamento do PagSeguro some durante o checkout. O que fiz de errado? ###
 
 Você esqueceu de selecionar o Brasil durante o cadastro no checkout.
 A opção de pagamento pelo PagSeguro funciona apenas com o Brasil.
 
-= É possível enviar os dados de "Número", "Bairro" e "CPF" para o PagSeguro? =
+### É possível enviar os dados de "Número" e "Bairro" para o PagSeguro? ###
 
 Sim é possível, basta utilizar o plugin [WooCommerce Extra Checkout Fields for Brazil](http://wordpress.org/extend/plugins/woocommerce-extra-checkout-fields-for-brazil/).
 
-= Ao tentar finalizar a compra aparece a mensagem "PagSeguro: Um erro ocorreu ao processar o seu pagamento, por favor, tente novamente ou entre em contato para obter ajuda." o que fazer? =
-
-Esta mensagem geralmente aparece por causa que não foi configurado um Token válido.  
-Gere um novo Token no PagSeguro em "Integrações" > "[Token de Segurança](https://pagseguro.uol.com.br/integracao/token-de-seguranca.jhtml)" e adicione ele nas configurações do plugin.
-
-Caso o erro persista mesmo com o novo Token, você deve ativar a opção **Log de depuração** nas configurações do plugin e tentar novamente fechar uma compra para que desta forma seja gerado o log.  
-Me envie o link por [e-mail](http://claudiosmweb.com/contato/), desta forma posso te ajudar a resolver o problema.
-
-= A compra é cancelada após alguns minutos, mesmo com o pedido sendo pago, como resolvo isso? =
+### A compra é cancelada após alguns minutos, mesmo com o pedido sendo pago, como resolvo isso? ###
 
 Para resolver este problema vá até "WooCommerce" > "Configurações" > "Inventário" e limpe (deixe em branco) o valor da opção **Manter Estoque (minutos)**.
 
-= Mais dúvidas relacionadas ao funcionamento do plugin? =
+### Mais dúvidas relacionadas ao funcionamento do plugin? ###
 
 Entre em contato [clicando aqui](http://claudiosmweb.com/plugins/pagseguro-para-woocommerce/).
 
-== Screenshots ==
+## Screenshots ##
 
-1. Settings page.
-2. Checkout page.
+### 1. Settings page. ###
+![1. Settings page.](http://s.wordpress.org/extend/plugins/woocommerce-pagseguro/screenshot-1.png)
 
-== Changelog ==
+### 2. Checkout page. ###
+![2. Checkout page.](http://s.wordpress.org/extend/plugins/woocommerce-pagseguro/screenshot-2.png)
 
-= 2.2.0 - 04/12/2013 =
 
-* Corrigido padrões de código.
-* Removida compatibilidade com versões 1.6.x ou inferiores do WooCommerce.
-* Adicionada compatibilidade com WooCommerce 2.1 ou superior.
+## Changelog ##
 
-= 2.1.1 - 03/09/2013 =
-
-* Adicionada mensagem sobre DDD errado nas mensagens de erro do PagSeguro.
-* Correção da verificação do IPN.
-
-= 2.1.0 - 29/08/2013 =
-
-* Adicionada função para tratar as mensagens de erro do PagSeguro para CPF, CEP e número de telefone.
-
-= 2.0.3 - 22/08/2013 =
-
-* Correção da alteração de status pelo pela notificação de pagamento do PagSeguro.
-
-= 2.0.2 - 22/08/2013 =
-
-* Corrigido o erro causado com números de telefone sem DDD.
-
-= 2.0.1 - 19/08/2013 =
-
-* Removida a obrigatoriedade de enviar os campos de endereço.
-
-= 2.0.0 - 17/08/2013 =
-
-* Adicionadas as novas APIs de pagamentos e notificações do PagSeguro.
-* Removidas as APIs antigas de pagamento e notificações do PagSeguro.
-* Melhoria nos status de pagamento.
-* Melhorias na notificações sobre compras em disputas ou que tiveram o pagamento devolvido.
-
-= 1.6.1 - 14/08/2013 =
-
-* Melhoria no JavaScript inline no formulário de checkout.
-
-= 1.6.0 - 26/07/2013 =
-
-* Adicionado o filtro `woocommerce_pagseguro_icon` para troca do ícone do método de pagamento.
-* Melhoria no filtro `woocommerce_pagseguro_args`, agora ele aceita o objeto `WC_Order` no lugar do ID.
-* Melhoria nas opções do plugin.
-* Melhoria nas mensagens de status do pedido.
-
-= 1.5.0 - 24/06/2013 =
-
-* Adicionado link de `Configurações` na página de plugins.
-* Melhorias no código.
-* Adicionado suporte para WooCommerce 2.1.
-* Adicionado o ID da compra no filtro `woocommerce_pagseguro_args`.
-
-= 1.4.0 - 02/04/2013 =
+### 1.4 - 02/04/2013 ###
 
 * Correção do retorno automático de dados na versão 2.0.0 ou superior do WooCommerce.
 
-= 1.3.4 - 06/03/2013 =
+### 1.3.4 - 06/03/2013 ###
 
 * Corrigida a compatibilidade com WooCommerce 2.0.0 ou mais recente.
 
-= 1.3.3 - 08/02/2013 =
+### 1.3.3 - 08/02/2013 ###
 
 * Corrigido o hook responsavel por salvar as opções para a versão 2.0 RC do WooCommerce.
 
-= 1.3.2 - 08/02/2013 =
+### 1.3.2 - 08/02/2013 ###
 
 * Plugin corrigido para a versão 2.0 do WooCommerce.
 
-= 1.3.1 - 08/12/2012 =
+### 1.3.1 - 08/12/2012 ###
 
 * Melhoria no método que atualiza o status do pedido.
 * Correção da quantidade de caracteres das descrição dos produtos no PagSeguro.
 
-= 1.3.0 - 30/11/2012 =
+### 1.3 - 30/11/2012 ###
 
 * Adicionada opção para logs de erro.
 * Adiciona opção para validar ou não endereço (quando ativo força cliente a informar os dados corretamente e ir direto para a página de pagamento do PagSeguro).
 
-= 1.2.2 - 19/11/2012 =
+### 1.2.2 - 19/11/2012 ###
 
 * Corrigido problema com cupons de desconto (descontos no carrinho).
 
-= 1.2.1 =
+### 1.2.1 ###
 
 * Corrigido o problema de produto com a descrição/nome muito grande no PagSeguro.
 
-= 1.2.0 =
+### 1.2 ###
 
 * Removida a classe do retorno automático que usava cURL em favor da função wp_remote_post().
 * Otimizado o retorno automático de dados.
 
-= 1.1.1 =
+### 1.1.1 ###
 
 * Tradução revisada.
 * Melhorada a integração de retorno automático para o status de "Aguardando pagamento".
 
-= 1.1.0 =
+### 1.1 ###
 
 * Adicionado retorno automático de dados.
 * Melhorado o sistema de notificações.
 * Adicionada classe para validar o retorno automático de dados.
 * Adicionado campo de token nas configurações do plugin (necessário para o retorno automático).
 
-= 1.0.2 =
+### 1.0.2 ###
 
 * Adicionada função para abater estoque automáticamente quando o cliente vai para o PagSeguro.
 
-= 1.0.1 =
+### 1.0.1 ###
 
 * Correção para impedir que o portal de pagamento seja habilitado se a conta de email do PagSeguro estiver em branco
 
-= 1.0.0 =
+### 1.0 ###
 
 * Versão incial do plugin.
 
-== Upgrade Notice ==
+## Upgrade Notice ##
 
-= 2.2.0 =
+### 1.4 ###
 
-* Removida compatibilidade com versões 1.6.x ou inferiores do WooCommerce.
-* Adicionada compatibilidade com WooCommerce 2.1 ou superior.
+* Correção do retorno de dados do PagSeguro.
 
-== License ==
+## License ##
 
 WooCommerce PagSeguro is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
