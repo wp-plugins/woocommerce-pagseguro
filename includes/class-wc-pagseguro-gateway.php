@@ -296,7 +296,7 @@ class WC_PagSeguro_Gateway extends WC_Payment_Gateway {
 				'type'        => 'checkbox',
 				'label'       => __( 'Enable PagSeguro Sandbox', 'woocommerce-pagseguro' ),
 				'default'     => 'no',
-				'description' => sprintf( __( 'PagSeguro Sandbox can be used to test the payments. <strong>Note:</strong> you must use the development token that can be found in %s.', 'woocommerce-pagseguro' ), '<a href="https://sandbox.pagseguro.uol.com.br/dados-de-teste.html" target="_blank">' . __( 'PagSeguro Sandbox', 'woocommerce-pagseguro' ) .'</a>' )
+				'description' => sprintf( __( 'PagSeguro Sandbox can be used to test the payments. <strong>Note:</strong> you must use the development token that can be found in %s.', 'woocommerce-pagseguro' ), '<a href="https://sandbox.pagseguro.uol.com.br/comprador-de-testes.html" target="_blank">' . __( 'PagSeguro Sandbox', 'woocommerce-pagseguro' ) .'</a>' )
 			),
 			'debug' => array(
 				'title'       => __( 'Debug Log', 'woocommerce-pagseguro' ),
@@ -622,6 +622,9 @@ class WC_PagSeguro_Gateway extends WC_Payment_Gateway {
 						break;
 					case 3 :
 						$order->add_order_note( __( 'PagSeguro: Payment approved.', 'woocommerce-pagseguro' ) );
+
+						// For WooCommerce 2.2 or later.
+						add_post_meta( $order->id, '_transaction_id', (string) $posted->code, true );
 
 						// Changing the order for processing and reduces the stock.
 						$order->payment_complete();
