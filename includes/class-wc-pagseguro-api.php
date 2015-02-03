@@ -269,6 +269,9 @@ class WC_PagSeguro_API {
 			case 53029 :
 				return __( '<strong>Neighborhood</strong> is a required field.', 'woocommerce-pagseguro' );
 				break;
+			case 53046 :
+				return __( 'Credit card holder CPF invalid.', 'woocommerce-pagseguro' );
+				break;
 			case 53122 :
 				return __( 'Invalid email domain. You must use an email @sandbox.pagseguro.com.br while you are using the PagSeguro Sandbox.', 'woocommerce-pagseguro' );
 				break;
@@ -410,9 +413,9 @@ class WC_PagSeguro_API {
 
 			// Shipping Cost.
 			if ( defined( 'WC_VERSION' ) && version_compare( WC_VERSION, '2.1', '>=' ) ) {
-				$shipping_total = $this->money_format( $order->get_total_shipping() );
+				$shipping_total = $order->get_total_shipping();
 			} else {
-				$shipping_total = $this->money_format( $order->get_shipping() );
+				$shipping_total = $order->get_shipping();
 			}
 
 			if ( $shipping_total > 0 ) {
@@ -420,8 +423,10 @@ class WC_PagSeguro_API {
 			}
 
 			// Discount.
-			if ( 0 < $order->get_order_discount() ) {
-				$extra_amount = '-' . $this->money_format( $order->get_order_discount() );
+			if ( defined( 'WC_VERSION' ) && version_compare( WC_VERSION, '2.3', '<' ) ) {
+				if ( 0 < $order->get_order_discount() ) {
+					$extra_amount = '-' . $this->money_format( $order->get_order_discount() );
+				}
 			}
 		}
 

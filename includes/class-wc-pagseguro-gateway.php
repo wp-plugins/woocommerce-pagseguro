@@ -8,8 +8,6 @@ class WC_PagSeguro_Gateway extends WC_Payment_Gateway {
 
 	/**
 	 * Constructor for the gateway.
-	 *
-	 * @return void
 	 */
 	public function __construct() {
 		global $woocommerce;
@@ -67,35 +65,32 @@ class WC_PagSeguro_Gateway extends WC_Payment_Gateway {
 			add_action( 'wp_enqueue_scripts', array( $this, 'checkout_scripts' ) );
 		}
 
-		// Display admin notices.
-		$this->admin_notices();
+		if ( is_admin() ) {
+			add_action( 'admin_notices', array( $this, 'admin_notices' ) );
+		}
 	}
 
 	/**
 	 * Displays notifications when the admin has something wrong with the configuration.
-	 *
-	 * @return void
 	 */
-	protected function admin_notices() {
-		if ( is_admin() ) {
-			// Checks if email is not empty.
-			if ( empty( $this->email ) ) {
-				add_action( 'admin_notices', array( $this, 'mail_missing_message' ) );
-			}
+	public function admin_notices() {
+		// Checks if email is not empty.
+		if ( empty( $this->email ) ) {
+			include_once 'views/html-notice-email-missing.php';
+		}
 
-			// Checks if token is not empty.
-			if ( empty( $this->token ) ) {
-				add_action( 'admin_notices', array( $this, 'token_missing_message' ) );
-			}
+		// Checks if token is not empty.
+		if ( empty( $this->token ) ) {
+			include_once 'views/html-notice-token-missing.php';
+		}
 
-			if ( 'transparent' == $this->method && ! class_exists( 'Extra_Checkout_Fields_For_Brazil' ) ) {
-				add_action( 'admin_notices', array( $this, 'requires_extra_checkout_fields_for_brazil' ) );
-			}
+		if ( 'transparent' == $this->method && ! class_exists( 'Extra_Checkout_Fields_For_Brazil' ) ) {
+			include_once 'views/html-notice-ecfb-missing.php';
+		}
 
-			// Checks that the currency is supported
-			if ( ! $this->using_supported_currency() ) {
-				add_action( 'admin_notices', array( $this, 'currency_not_supported_message' ) );
-			}
+		// Checks that the currency is supported
+		if ( ! $this->using_supported_currency() && ! class_exists( 'woocommerce_wpml' ) ) {
+			include_once 'views/html-notice-currency-not-supported.php';
 		}
 	}
 
@@ -138,9 +133,7 @@ class WC_PagSeguro_Gateway extends WC_Payment_Gateway {
 	/**
 	 * Admin scripts.
 	 *
-	 * @param  string $hook Page slug.
-	 *
-	 * @return void
+	 * @param string $hook Page slug.
 	 */
 	public function admin_scripts( $hook ) {
 		if ( in_array( $hook, array( 'woocommerce_page_wc-settings', 'woocommerce_page_woocommerce_settings' ) ) && ( isset( $_GET['section'] ) && 'wc_pagseguro_gateway' == strtolower( $_GET['section'] ) ) ) {
@@ -152,8 +145,6 @@ class WC_PagSeguro_Gateway extends WC_Payment_Gateway {
 
 	/**
 	 * Checkout scripts.
-	 *
-	 * @return void
 	 */
 	public function checkout_scripts() {
 		if ( is_checkout() ) {
@@ -189,9 +180,20 @@ class WC_PagSeguro_Gateway extends WC_Payment_Gateway {
 	}
 
 	/**
-	 * Initialise Gateway Settings Form Fields.
+	 * Get log.
 	 *
-	 * @return void
+	 * @return string
+	 */
+	protected function get_log_view() {
+		if ( defined( 'WC_VERSION' ) && version_compare( WC_VERSION, '2.2', '>=' ) ) {
+			return '<a href="' . esc_url( admin_url( 'admin.php?page=wc-status&tab=logs&log_file=' . esc_attr( $this->id ) . '-' . sanitize_file_name( wp_hash( $this->id ) ) . '.log' ) ) . '">' . __( 'System Status &gt; Logs', 'woocommerce-pagseguro' ) . '</a>';
+		}
+
+		return '<code>woocommerce/logs/' . esc_attr( $this->id ) . '-' . sanitize_file_name( wp_hash( $this->id ) ) . '.txt</code>';
+	}
+
+	/**
+	 * Initialise Gateway Settings Form Fields.
 	 */
 	public function init_form_fields() {
 		$this->form_fields = array(
@@ -233,6 +235,7 @@ class WC_PagSeguro_Gateway extends WC_Payment_Gateway {
 				'description' => __( 'Choose how the customer will interact with the PagSeguro. Redirect (Client goes to PagSeguro page) or Lightbox (Inside your store)', 'woocommerce-pagseguro' ),
 				'desc_tip'    => true,
 				'default'     => 'direct',
+				'class'       => 'wc-enhanced-select',
 				'options'     => array(
 					'redirect'    => __( 'Redirect (default)', 'woocommerce-pagseguro' ),
 					'lightbox'    => __( 'Lightbox', 'woocommerce-pagseguro' ),
@@ -303,17 +306,24 @@ class WC_PagSeguro_Gateway extends WC_Payment_Gateway {
 				'type'        => 'checkbox',
 				'label'       => __( 'Enable logging', 'woocommerce-pagseguro' ),
 				'default'     => 'no',
-				'description' => sprintf( __( 'Log PagSeguro events, such as API requests, inside %s', 'woocommerce-pagseguro' ), '<code>woocommerce/logs/' . esc_attr( $this->id ) . '-' . sanitize_file_name( wp_hash( $this->id ) ) . '.txt</code>' )
+				'description' => sprintf( __( 'Log PagSeguro events, such as API requests, inside %s', 'woocommerce-pagseguro' ), $this->get_log_view() )
 			)
 		);
 	}
 
 	/**
+	 * Admin page.
+	 */
+	public function admin_options() {
+		include 'views/html-admin-page.php';
+	}
+
+	/**
 	 * Add error messages in checkout.
 	 *
-	 * @param string $messages Error message.
+	 * @param  string $messages Error message.
 	 *
-	 * @return string          Displays the error messages.
+	 * @return string           Displays the error messages.
 	 */
 	protected function add_error( $messages ) {
 		global $woocommerce;
@@ -335,11 +345,9 @@ class WC_PagSeguro_Gateway extends WC_Payment_Gateway {
 	/**
 	 * Send email notification.
 	 *
-	 * @param  string $subject Email subject.
-	 * @param  string $title   Email title.
-	 * @param  string $message Email message.
-	 *
-	 * @return void
+	 * @param string $subject Email subject.
+	 * @param string $title   Email title.
+	 * @param string $message Email message.
 	 */
 	protected function send_email( $subject, $title, $message ) {
 		global $woocommerce;
@@ -398,9 +406,9 @@ class WC_PagSeguro_Gateway extends WC_Payment_Gateway {
 	/**
 	 * Process the payment and return the result.
 	 *
-	 * @param int    $order_id Order ID.
+	 * @param  int    $order_id Order ID.
 	 *
-	 * @return array           Redirect.
+	 * @return array            Redirect.
 	 */
 	public function process_payment( $order_id ) {
 		global $woocommerce;
@@ -439,15 +447,17 @@ class WC_PagSeguro_Gateway extends WC_Payment_Gateway {
 				);
 			}
 		} else {
+			$use_shipping = isset( $_POST['ship_to_different_address'] ) ? true : false;
+
 			if ( defined( 'WC_VERSION' ) && version_compare( WC_VERSION, '2.1', '>=' ) ) {
 				return array(
 					'result'   => 'success',
-					'redirect' => $order->get_checkout_payment_url( true )
+					'redirect' => add_query_arg( array( 'use_shipping' => $use_shipping ), $order->get_checkout_payment_url( true ) )
 				);
 			} else {
 				return array(
 					'result'   => 'success',
-					'redirect' => add_query_arg( 'order', $order->id, add_query_arg( 'key', $order->order_key, get_permalink( woocommerce_get_page_id( 'pay' ) ) ) )
+					'redirect' => add_query_arg( array( 'order' => $order->id, 'key' => $order->order_key, 'use_shipping' => $use_shipping ), get_permalink( woocommerce_get_page_id( 'pay' ) ) )
 				);
 			}
 		}
@@ -463,8 +473,13 @@ class WC_PagSeguro_Gateway extends WC_Payment_Gateway {
 	public function receipt_page( $order_id ) {
 		global $woocommerce;
 
-		$order    = new WC_Order( $order_id );
-		$response = $this->api->do_checkout_request( $order, $_POST );
+		$order        = new WC_Order( $order_id );
+		$request_data = $_POST;
+		if ( isset( $_GET['use_shipping'] ) && true == $_GET['use_shipping'] ) {
+			$request_data['ship_to_different_address'] = true;
+		}
+
+		$response = $this->api->do_checkout_request( $order, $request_data );
 
 		if ( $response['url'] ) {
 			// Lightbox script.
@@ -512,8 +527,6 @@ class WC_PagSeguro_Gateway extends WC_Payment_Gateway {
 
 	/**
 	 * Check API Response.
-	 *
-	 * @return void
 	 */
 	public function check_ipn_response() {
 		@ob_clean();
@@ -533,8 +546,6 @@ class WC_PagSeguro_Gateway extends WC_Payment_Gateway {
 	 * Update order status.
 	 *
 	 * @param array $posted PagSeguro post data.
-	 *
-	 * @return void
 	 */
 	public function update_order_status( $posted ) {
 
@@ -742,41 +753,4 @@ class WC_PagSeguro_Gateway extends WC_Payment_Gateway {
 
 		return admin_url( 'admin.php?page=woocommerce_settings&tab=payment_gateways&section=WC_PagSeguro_Gateway' );
 	}
-
-	/**
-	 * Adds error message when not configured the email.
-	 *
-	 * @return string Error Mensage.
-	 */
-	public function mail_missing_message() {
-		echo '<div class="error"><p><strong>' . __( 'PagSeguro Disabled', 'woocommerce-pagseguro' ) . '</strong>: ' . sprintf( __( 'You should inform your email address. %s', 'woocommerce-pagseguro' ), '<a href="' . $this->admin_url() . '">' . __( 'Click here to configure!', 'woocommerce-pagseguro' ) . '</a>' ) . '</p></div>';
-	}
-
-	/**
-	 * Adds error message when not configured the token.
-	 *
-	 * @return string Error Mensage.
-	 */
-	public function token_missing_message() {
-		echo '<div class="error"><p><strong>' . __( 'PagSeguro Disabled', 'woocommerce-pagseguro' ) . '</strong>: ' . sprintf( __( 'You should inform your token. %s', 'woocommerce-pagseguro' ), '<a href="' . $this->admin_url() . '">' . __( 'Click here to configure!', 'woocommerce-pagseguro' ) . '</a>' ) . '</p></div>';
-	}
-
-	/**
-	 * Adds error message when not installed the Extra Checkout Fields for Brazil plugin.
-	 *
-	 * @return string Error Mensage.
-	 */
-	public function requires_extra_checkout_fields_for_brazil() {
-		echo '<div class="error"><p><strong>' . __( 'PagSeguro Disabled', 'woocommerce-pagseguro' ) . '</strong>: ' . sprintf( __( 'Checkout Transparent requires the latest version of the %s to works.', 'woocommerce-pagseguro' ), '<a href="http://wordpress.org/plugins/woocommerce-extra-checkout-fields-for-brazil/">' . __( 'Extra Checkout Fields for Brazil', 'woocommerce-pagseguro' ) . '</a>' ) . '</p></div>';
-	}
-
-	/**
-	 * Adds error message when an unsupported currency is used.
-	 *
-	 * @return string
-	 */
-	public function currency_not_supported_message() {
-		echo '<div class="error"><p><strong>' . __( 'PagSeguro Disabled', 'woocommerce-pagseguro' ) . '</strong>: ' . sprintf( __( 'Currency <code>%s</code> is not supported. Works only with Brazilian Real.', 'woocommerce-pagseguro' ), get_woocommerce_currency() ) . '</p></div>';
-	}
-
 }

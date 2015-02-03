@@ -5,7 +5,7 @@
  * Description: Gateway de pagamento PagSeguro para WooCommerce.
  * Author: Claudio Sanches, Gabriel Reguly
  * Author URI: http://claudiosmweb.com/
- * Version: 2.7.4
+ * Version: 2.8.0
  * License: GPLv2 or later
  * Text Domain: woocommerce-pagseguro
  * Domain Path: languages/
@@ -27,7 +27,7 @@ class WC_PagSeguro {
 	 *
 	 * @var string
 	 */
-	const VERSION = '2.7.4';
+	const VERSION = '2.8.0';
 
 	/**
 	 * Instance of this class.
@@ -42,6 +42,7 @@ class WC_PagSeguro {
 	private function __construct() {
 		// Load plugin text domain
 		add_action( 'init', array( $this, 'load_plugin_textdomain' ) );
+		add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), array( $this, 'plugin_action_links' ) );
 
 		// Checks with WooCommerce is installed.
 		if ( class_exists( 'WC_Payment_Gateway' ) ) {
@@ -79,8 +80,6 @@ class WC_PagSeguro {
 
 	/**
 	 * Load the plugin text domain for translation.
-	 *
-	 * @return void
 	 */
 	public function load_plugin_textdomain() {
 		$locale = apply_filters( 'plugin_locale', get_locale(), 'woocommerce-pagseguro' );
@@ -90,9 +89,33 @@ class WC_PagSeguro {
 	}
 
 	/**
-	 * Includes.
+	 * Action links.
 	 *
-	 * @return void
+	 * @param  array $links
+	 *
+	 * @return array
+	 */
+	public function plugin_action_links( $links ) {
+		$plugin_links = array();
+
+		if ( defined( 'WOOCOMMERCE_VERSION' ) ) {
+			if ( version_compare( WOOCOMMERCE_VERSION, '2.1', '>=' ) ) {
+				$settings_url = admin_url( 'admin.php?page=wc-settings&tab=checkout&section=wc_pagseguro_gateway' );
+			} else {
+				$settings_url = admin_url( 'admin.php?page=woocommerce_settings&tab=payment_gateways&section=WC_PagSeguro_Gateway' );
+			}
+
+			$plugin_links[] = '<a href="' . esc_url( $settings_url ) . '">' . __( 'Settings', 'woocommerce-pagseguro' ) . '</a>';
+		}
+
+		$plugin_links[] = '<a href="https://claudiosmweb.freshdesk.com/support/solutions/folders/1000209510" target="_blank">' . __( 'Documentation', 'woocommerce-pagseguro' ) . '</a>';
+		$plugin_links[] = '<a href="https://claudiosmweb.freshdesk.com/support/tickets/new" target="_blank">' . __( 'Support', 'woocommerce-pagseguro' ) . '</a>';
+
+		return array_merge( $plugin_links, $links );
+	}
+
+	/**
+	 * Includes.
 	 */
 	private function includes() {
 		include_once 'includes/class-wc-pagseguro-xml.php';
