@@ -5,7 +5,7 @@
  * Description: Gateway de pagamento PagSeguro para WooCommerce.
  * Author: Claudio Sanches, Gabriel Reguly
  * Author URI: http://claudiosmweb.com/
- * Version: 2.8.1
+ * Version: 2.9.0
  * License: GPLv2 or later
  * Text Domain: woocommerce-pagseguro
  * Domain Path: languages/
@@ -27,7 +27,7 @@ class WC_PagSeguro {
 	 *
 	 * @var string
 	 */
-	const VERSION = '2.8.1';
+	const VERSION = '2.9.0';
 
 	/**
 	 * Instance of this class.
@@ -50,6 +50,7 @@ class WC_PagSeguro {
 
 			add_filter( 'woocommerce_payment_gateways', array( $this, 'add_gateway' ) );
 			add_filter( 'woocommerce_available_payment_gateways', array( $this, 'hides_when_is_outside_brazil' ) );
+			add_filter( 'woocommerce_cancel_unpaid_order', array( $this, 'stop_cancel_unpaid_orders' ), 10, 2 );
 		} else {
 			add_action( 'admin_notices', array( $this, 'woocommerce_missing_notice' ) );
 		}
@@ -82,9 +83,6 @@ class WC_PagSeguro {
 	 * Load the plugin text domain for translation.
 	 */
 	public function load_plugin_textdomain() {
-		$locale = apply_filters( 'plugin_locale', get_locale(), 'woocommerce-pagseguro' );
-
-		load_textdomain( 'woocommerce-pagseguro', trailingslashit( WP_LANG_DIR ) . 'woocommerce-pagseguro/woocommerce-pagseguro-' . $locale . '.mo' );
 		load_plugin_textdomain( 'woocommerce-pagseguro', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 	}
 
@@ -137,15 +135,6 @@ class WC_PagSeguro {
 	}
 
 	/**
-	 * WooCommerce fallback notice.
-	 *
-	 * @return  string
-	 */
-	public function woocommerce_missing_notice() {
-		echo '<div class="error"><p>' . sprintf( __( 'WooCommerce PagSeguro Gateway depends on the last version of %s to work!', 'woocommerce-pagseguro' ), '<a href="http://wordpress.org/extend/plugins/woocommerce/">' . __( 'WooCommerce', 'woocommerce-pagseguro' ) . '</a>' ) . '</p></div>';
-	}
-
-	/**
 	 * Hides the PagSeguro with payment method with the customer lives outside Brazil.
 	 *
 	 * @param   array $available_gateways Default Available Gateways.
@@ -160,6 +149,31 @@ class WC_PagSeguro {
 		}
 
 		return $available_gateways;
+	}
+
+	/**
+	 * Stop cancel unpaid PagSeguro orders.
+	 *
+	 * @param  bool     $cancel
+	 * @param  WC_Order $order
+	 *
+	 * @return bool
+	 */
+	public function stop_cancel_unpaid_orders( $cancel, $order ) {
+		if ( 'pagseguro' === $order->payment_method ) {
+			return false;
+		}
+
+		return $cancel;
+	}
+
+	/**
+	 * WooCommerce fallback notice.
+	 *
+	 * @return  string
+	 */
+	public function woocommerce_missing_notice() {
+		echo '<div class="error"><p>' . sprintf( __( 'WooCommerce PagSeguro Gateway depends on the last version of %s to work!', 'woocommerce-pagseguro' ), '<a href="http://wordpress.org/extend/plugins/woocommerce/">' . __( 'WooCommerce', 'woocommerce-pagseguro' ) . '</a>' ) . '</p></div>';
 	}
 }
 
