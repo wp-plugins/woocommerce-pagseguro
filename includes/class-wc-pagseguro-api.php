@@ -333,18 +333,40 @@ class WC_PagSeguro_API {
 	}
 
 	/**
-	 * Get WooCommerce return URL.
+	 * Safe load XML.
 	 *
-	 * @return string
+	 * @param  string $source
+	 * @param  int    $options
+	 *
+	 * @return SimpleXMLElement|bool
 	 */
-	protected function get_wc_request_url() {
-		global $woocommerce;
+	protected function safe_load_xml( $source, $options = 0 ) {
+		$old = null;
 
-		if ( defined( 'WC_VERSION' ) && version_compare( WC_VERSION, '2.1', '>=' ) ) {
-			return WC()->api_request_url( 'WC_PagSeguro_Gateway' );
-		} else {
-			return $woocommerce->api_request_url( 'WC_PagSeguro_Gateway' );
+		if ( function_exists( 'libxml_disable_entity_loader' ) ) {
+			$old = libxml_disable_entity_loader( true );
 		}
+
+		$dom    = new DOMDocument();
+		$return = $dom->loadXML( $source, $options );
+
+		if ( ! is_null( $old ) ) {
+			libxml_disable_entity_loader( $old );
+		}
+
+		if ( ! $return ) {
+			return false;
+		}
+
+		if ( isset( $dom->doctype ) ) {
+			if ( 'yes' == $this->gateway->debug ) {
+				$this->gateway->log->add( $this->gateway->id, 'Unsafe DOCTYPE Detected while XML parsing' );
+			}
+
+			return false;
+		}
+
+		return simplexml_import_dom( $dom );
 	}
 
 	/**
@@ -373,7 +395,12 @@ class WC_PagSeguro_API {
 				foreach ( $order->get_items() as $order_item ) {
 					if ( $order_item['qty'] ) {
 						$item_name = $order_item['name'];
-						$item_meta = new WC_Order_Item_Meta( $order_item['item_meta'] );
+
+						if ( defined( 'WC_VERSION' ) && version_compare( WC_VERSION, '2.4.0', '<' ) ) {
+							$item_meta = new WC_Order_Item_Meta( $order_item['item_meta'] );
+						} else {
+							$item_meta = new WC_Order_Item_Meta( $order_item );
+						}
 
 						if ( $meta = $item_meta->display( true, true ) ) {
 							$item_name .= ' - ' . $meta;
@@ -411,14 +438,8 @@ class WC_PagSeguro_API {
 			}
 
 			// Shipping Cost.
-			if ( defined( 'WC_VERSION' ) && version_compare( WC_VERSION, '2.1', '>=' ) ) {
-				$shipping_total = $order->get_total_shipping();
-			} else {
-				$shipping_total = $order->get_shipping();
-			}
-
-			if ( $shipping_total > 0 ) {
-				$shipping_cost = $this->money_format( $shipping_total );
+			if ( 0 < $order->get_total_shipping() ) {
+				$shipping_cost = $this->money_format( $order->get_total_shipping() );
 			}
 
 			// Discount.
@@ -459,7 +480,7 @@ class WC_PagSeguro_API {
 		// Checks if is localhost... PagSeguro not accept localhost urls!
 		if ( ! in_array( $_SERVER['HTTP_HOST'], array( 'localhost', '127.0.0.1' ) ) ) {
 			$xml->add_redirect_url( $this->gateway->get_return_url( $order ) );
-			$xml->add_notification_url( $this->get_wc_request_url() );
+			$xml->add_notification_url( WC()->api_request_url( 'WC_PagSeguro_Gateway' ) );
 		}
 
 		$xml->add_max_uses( 1 );
@@ -491,7 +512,7 @@ class WC_PagSeguro_API {
 		$xml->add_sender_data( $order, $hash );
 		$xml->add_currency( get_woocommerce_currency() );
 		if ( ! in_array( $_SERVER['HTTP_HOST'], array( 'localhost', '127.0.0.1' ) ) ) {
-			$xml->add_notification_url( $this->get_wc_request_url() );
+			$xml->add_notification_url( WC()->api_request_url( 'WC_PagSeguro_Gateway' ) );
 		}
 		$xml->add_items( $data['items'] );
 		$xml->add_extra_amount( $data['extra_amount'] );
@@ -549,7 +570,8 @@ class WC_PagSeguro_API {
 			}
 		} else {
 			try {
-				$body = @new SimpleXmlElement( $response['body'], LIBXML_NOCDATA );
+				libxml_disable_entity_loader( true );
+				$body = $this->safe_load_xml( $response['body'], LIBXML_NOCDATA );
 			} catch ( Exception $e ) {
 				$body = '';
 
@@ -641,7 +663,7 @@ class WC_PagSeguro_API {
 			}
 		} else {
 			try {
-				$data = @new SimpleXmlElement( $response['body'], LIBXML_NOCDATA );
+				$data = $this->safe_load_xml( $response['body'], LIBXML_NOCDATA );
 			} catch ( Exception $e ) {
 				$data = '';
 
@@ -696,7 +718,7 @@ class WC_PagSeguro_API {
 	/**
 	 * Process the IPN.
 	 *
-	 * @return bool|SimpleXmlElement
+	 * @return bool|SimpleXMLElement
 	 */
 	public function process_ipn_request( $data ) {
 
@@ -733,7 +755,7 @@ class WC_PagSeguro_API {
 			}
 		} else {
 			try {
-				$body = @new SimpleXmlElement( $response['body'], LIBXML_NOCDATA );
+				$body = $this->safe_load_xml( $response['body'], LIBXML_NOCDATA );
 			} catch ( Exception $e ) {
 				$body = '';
 
@@ -779,7 +801,7 @@ class WC_PagSeguro_API {
 			}
 		} else {
 			try {
-				$session = @new SimpleXmlElement( $response['body'], LIBXML_NOCDATA );
+				$session = $this->safe_load_xml( $response['body'], LIBXML_NOCDATA );
 			} catch ( Exception $e ) {
 				$session = '';
 
